@@ -21,9 +21,10 @@ class CanvasConnection:
         self.favorited_classes = self._get_favorited_classes()
         self.assignments_json = self._get_json()
 
-    def _get_json(self):
+    def _get_json(self) -> dict:
         with open(JSON_PATH) as f:
-            self.assignments_json = json.load(f)
+            data = json.load(f)
+            return data
 
     def _get_favorited_classes(self) -> list[Course]:
         paginated_courses = self.user.get_favorite_courses()
@@ -51,7 +52,7 @@ class CanvasConnection:
             data = json.load(f)
 
         data.update(courses)
-        pprint(data)
+        # pprint(data)
 
         with open(JSON_PATH,'w') as f:
             json.dump(data, f, indent=4, sort_keys=True)
@@ -59,29 +60,31 @@ class CanvasConnection:
 
     def build_assignment_json(self) -> dict:
         """ Builds out assignment dictionary for specified course """
-        assignments = {}
+
         for course in self._get_favorited_classes():
-            print(course.name)
+            assignments = {}
+            assignments[course.name] = {}
             todos = self._get_todos(course)
             for assignment in todos:
                 assignment_data = assignment.__dict__
                 name = assignment_data["assignment"].get('name', None)
-                isGraded = assignment_data["assignment"].get('', None)
                 unlock_date = assignment_data["assignment"].get('unlock_at', None)
                 due_date = assignment_data["assignment"].get('created_at', None)
                 link = assignment_data["assignment"].get('html_url', None)
-                print(name)
-                print("\tUnlock date: ", unlock_date)
-                print("\tDue date: ", due_date)
-                print("\tisGraded: ", isGraded)
-                print("\tLink: ", link)
 
-        return assignments
-
+                assignment_info = {
+                    "unlock_date": unlock_date,
+                    "due_date": due_date,
+                    "link": link
+                }
+                self.assignments_json[course.name][name] = assignment_info
+            # self.assignments_json[course.name][name].update(assignments)
 
     def build_json(self):
         self.build_course_json()
         self.build_assignment_json()
+        pprint(self.assignments_json)
+
 
     def convert_times(self, time_:str) -> str:
         """ Converts from YYYY-MM-DDTHH:mm:ss.fZ -> YYYY-MM-DD DAY"""
