@@ -1,8 +1,11 @@
 import os
 import json
 import datetime
+
+from canvasapi.todo import Todo
 import config
-from canvasapi import Canvas
+from pprint import pprint
+from canvasapi import Canvas, assignment
 from canvasapi.canvas import Course
 from canvasapi.course import Assignment
 
@@ -30,6 +33,11 @@ class CanvasConnection:
         paginated_assignments = course.get_assignments()
         return [assignment  for assignment in paginated_assignments]
 
+    def _get_todos(self, course: Course):
+        paginated_todo = course.get_todo_items()
+        todos: list[Todo] = [todo for todo in paginated_todo]
+        return todos
+
     def build_course_json(self):
         """ This is only called once per semester
             It builds out initial json without courses
@@ -37,37 +45,56 @@ class CanvasConnection:
         courses = {}
         for course in self.favorited_classes:
             course_name:str = course.name
-            course_name = '-'.join(course_name.split('-')[0:2])
+            courses[course_name] = {}
 
         with open(JSON_PATH) as f:
             data = json.load(f)
 
-        with open(JSON_PATH) as f:
+        data.update(courses)
+        pprint(data)
+
+        with open(JSON_PATH,'w') as f:
             json.dump(data, f, indent=4, sort_keys=True)
 
 
-    def build_assignment_json(self, course: Course) -> dict:
+    def build_assignment_json(self) -> dict:
         """ Builds out assignment dictionary for specified course """
-        list_assignments = self._get_assignments(course)
-        course_assignments_dict = {}
+        assignments = {}
+        for course in self._get_favorited_classes():
+            print(course.name)
+            todos = self._get_todos(course)
+            for assignment in todos:
+                assignment_data = assignment.__dict__
+                name = assignment_data["assignment"].get('name', None)
+                isGraded = assignment_data["assignment"].get('', None)
+                unlock_date = assignment_data["assignment"].get('unlock_at', None)
+                due_date = assignment_data["assignment"].get('created_at', None)
+                link = assignment_data["assignment"].get('html_url', None)
+                print(name)
+                print("\tUnlock date: ", unlock_date)
+                print("\tDue date: ", due_date)
+                print("\tisGraded: ", isGraded)
+                print("\tLink: ", link)
 
-        for assignment in list_assignments:
-            try:
-                grade = assignment.grade
-                posted_date = self.convert_times(assignment.posted_at)
-                due_date = self.convert_times(assignment.due_at)
-            except:
-                continue
-        return course_assignments_dict
+        return assignments
+
+
+    def build_json(self):
+        self.build_course_json()
+        self.build_assignment_json()
 
     def convert_times(self, time_:str) -> str:
         """ Converts from YYYY-MM-DDTHH:mm:ss.fZ -> YYYY-MM-DD DAY"""
         important_part = time_.split("T")[0]
         format_ = "%Y-%m-%d"
-        dt_obj = datetime.datetime.strptime(time_, format_)
+        dt_obj = datetime.datetime.strptime(important_part, format_)
         return str(dt_obj)
+
+    def run(self):
+        self.build_json()
 
     
 
 if __name__ == "__main__":
-    pass
+    driver = CanvasConnection(url=API_URL, token=API_KEY)
+    driver.run()
