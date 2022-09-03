@@ -95,22 +95,25 @@ class CanvasConnection:
         self.build_assignment_json()
         self._write_to_json()
 
-
-    def convert_times(self, time_:str) -> str:
-        """ Converts from YYYY-MM-DDTHH:mm:ss.fZ -> YYYY-MM-DD DAY"""
-        important_part = time_.split("T")[0]
-        format_ = "%Y-%m-%d"
-        dt_obj = datetime.datetime.strptime(important_part, format_)
-        return str(dt_obj)
-
     def run(self):
         self.build_json()
 
+def convert_times(time_:str) -> str:
+    """ Converts from YYYY-MM-DDTHH:mm:ss.fZ -> YYYY-MM-DD DAY"""
+    days = {0:"Mon", 1:"Tue", 2:"Wed", 3:"Thu", 4:"Fri", 5:"Sat", 6:"Sun"}
+    important_part = time_.split("T")[0]
+    format_ = "%Y-%m-%d"
+    dt_obj = datetime.datetime.strptime(important_part, format_)
+    dt_str = ''.join(str(dt_obj).split(" ")[0])
+    return f"{dt_str} {days[dt_obj.weekday()]}"
     
 
 if __name__ == "__main__":
-    driver = CanvasConnection(url=API_URL, token=API_KEY)
-    driver.run()
+    # driver = CanvasConnection(url=API_URL, token=API_KEY)
+    # driver.run()
+
+    res = convert_times(time_="2022-08-16T00:02:48Z")
+    print(res)
 
     # some_todo = driver._get_todos(driver.favorited_classes[0])[0]
     # pprint(some_todo.__dict__)
