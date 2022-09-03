@@ -13,6 +13,7 @@ API_URL = "https://pacific.instructure.com/"
 API_KEY = config.API_TOKEN
 
 JSON_PATH = "assignments2.json"
+COURSE_WHITELIST = ["COMP-191A-0-82653 Deep Learning Images (Fall 2022)"]
 
 class CanvasConnection:
     def __init__(self, url, token):
@@ -74,8 +75,7 @@ class CanvasConnection:
 
                 is_graded = assignment_data["assignment"].get('grading_type', None)
 
-                # NOTE: Change this in the future to a class you care about
-                if course_name != "COMP-191A-0-82653 Deep Learning Images (Fall 2022)":
+                if not course_name in COURSE_WHITELIST:
                     if not is_graded or is_graded == "not_graded":
                         continue
 
