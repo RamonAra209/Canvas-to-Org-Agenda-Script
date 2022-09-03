@@ -22,9 +22,13 @@ class CanvasConnection:
         self.assignments_json = self._get_json()
 
     def _get_json(self) -> dict:
-        with open(JSON_PATH) as f:
+        with open(JSON_PATH, 'r') as f:
             data = json.load(f)
             return data
+
+    def _write_to_json(self):
+        with open(JSON_PATH, 'w') as f:
+            json.dump(self.assignments_json, f, indent=4, sort_keys=True)
 
     def _get_favorited_classes(self) -> list[Course]:
         paginated_courses = self.user.get_favorite_courses()
@@ -52,22 +56,29 @@ class CanvasConnection:
             data = json.load(f)
 
         data.update(courses)
-        # pprint(data)
 
         with open(JSON_PATH,'w') as f:
             json.dump(data, f, indent=4, sort_keys=True)
 
 
-    def build_assignment_json(self) -> dict:
+    def build_assignment_json(self):
         """ Builds out assignment dictionary for specified course """
-
         for course in self._get_favorited_classes():
-            assignments = {}
-            assignments[course.name] = {}
+            course_name = course.name
             todos = self._get_todos(course)
             for assignment in todos:
                 assignment_data = assignment.__dict__
                 name = assignment_data["assignment"].get('name', None)
+                if self.assignments_json[course_name].get(name, None):
+                    continue
+
+                is_graded = assignment_data["assignment"].get('grading_type', None)
+
+                # NOTE: Change this in the future to a class you care about
+                if course_name != "COMP-191A-0-82653 Deep Learning Images (Fall 2022)":
+                    if not is_graded or is_graded == "not_graded":
+                        continue
+
                 unlock_date = assignment_data["assignment"].get('unlock_at', None)
                 due_date = assignment_data["assignment"].get('created_at', None)
                 link = assignment_data["assignment"].get('html_url', None)
@@ -75,15 +86,14 @@ class CanvasConnection:
                 assignment_info = {
                     "unlock_date": unlock_date,
                     "due_date": due_date,
-                    "link": link
+                    "link": link,
                 }
-                self.assignments_json[course.name][name] = assignment_info
-            # self.assignments_json[course.name][name].update(assignments)
+                self.assignments_json[course_name][name] = assignment_info
 
     def build_json(self):
         self.build_course_json()
         self.build_assignment_json()
-        pprint(self.assignments_json)
+        self._write_to_json()
 
 
     def convert_times(self, time_:str) -> str:
@@ -101,3 +111,6 @@ class CanvasConnection:
 if __name__ == "__main__":
     driver = CanvasConnection(url=API_URL, token=API_KEY)
     driver.run()
+
+    # some_todo = driver._get_todos(driver.favorited_classes[0])[0]
+    # pprint(some_todo.__dict__)
