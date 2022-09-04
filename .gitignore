@@ -13,3 +13,4 @@ venv
 config.py
 *.json
 *.org
+!README.ORG

@@ -1,0 +1,39 @@
+#+title: Canvas todo list to Org Agenda
+
+* TODO Preliminary Plan [2/5]
+- [X] Connect to Canvas API
+- [X] Get course data
+- [ ] Parse data for assignment post/deadline dates
+- [ ] ? See if there is a way to check if an assignment has a /grade/ attribute
+    The grade attribute will as our 'filter' for filtering out assignments we actually care about
+- [ ] Have a json file that acts as the intermediary between code + org todo file
+   #+begin_src json
+    "Classes" : {
+        "COMP127" : {
+            "Lab1" : {
+                "Posted Date" : "<posted date>",
+                "Deadline" : "<deadline>",
+                "link": "<link to assignment>", // if possible
+                "isDone" : False,}
+            // ...
+        }
+        // ...
+    }
+   #+end_src
+   The /isDone/ flag is going to act as our flag when we parse the org-todo for that specific assignment
+   Since the json file is the intermediary between org + code, we'll need to parse the org file also.
+   Switch /isDone/ to True when the the org agenda file says /DONE/ instead of /TODO/
+
+   We'll use this json data to format the TODO entry
+   #+begin_src python :results output
+    todo_entry = []
+    todo_entry.append(f"* TODO {class_}: {assignment_title} \n")
+    todo_entry.append(f"    DEADLINE: <2022-08-31 Wed 09:00>")
+    todo_entry.append(f"    Link: <link to assignment>")
+   #+end_src
+
+   #+RESULTS:
+* Course TODO attributes to look into
+- Todo objects relevant attributes:
+  + Todo.assignment
+  +
