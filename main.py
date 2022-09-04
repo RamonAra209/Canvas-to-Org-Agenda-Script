@@ -4,16 +4,18 @@ import datetime
 
 from canvasapi.todo import Todo
 import config
-from pprint import pprint
-from canvasapi import Canvas, assignment
+from canvasapi import Canvas
 from canvasapi.canvas import Course
 from canvasapi.course import Assignment
 
-API_URL = "https://pacific.instructure.com/"
+API_URL = config.API_URL
 API_KEY = config.API_TOKEN
 
-JSON_PATH = "assignments2.json"
-COURSE_WHITELIST = ["COMP-191A-0-82653 Deep Learning Images (Fall 2022)"]
+JSON_PATH = config.JSON_PATH
+ORG_PATH = config.ORG_PATH
+
+COURSE_WHITELIST = config.COURSE_WHITELIST
+
 
 class CanvasConnection:
     def __init__(self, url, token):
