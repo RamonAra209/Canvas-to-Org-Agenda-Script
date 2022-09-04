@@ -3,8 +3,9 @@
 This Python script connects to Canvas' API with your Canvas token, grabs your todos and saves them into a org-agenda file!
 
 The org todo entries are saved with the following format:
-#+begin_quote
+
+#+begin_src org
  * TODO <class>: <assignment>
    SCHEDULED: <assignment unlock time> DEADLINE: <assignment due date>
    <hyper link to assignment>
-#+end_quote
+#+end_src
