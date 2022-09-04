@@ -9,3 +9,12 @@ The org todo entries are saved with the following format:
    SCHEDULED: <assignment unlock time> DEADLINE: <assignment due date>
    <hyper link to assignment>
 #+end_src
+
+* TODO [#B] Some things I might add [0/2]
+- [ ] Add an interactive CLI [0/5]
+  + [ ] Ask the user where it would like to create the agenda file
+  + [ ] Setup the intermediate json & org file to keep track of todos
+  + [ ] Ask the user if they want to add classes to course /whitelist/
+  + [ ] The format which their classes are saved in
+        ... Since the todo entry depends on the class prefix being parsed correctly
+- [ ] If I add the features above, finish this README!
