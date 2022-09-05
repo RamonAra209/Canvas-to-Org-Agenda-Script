@@ -10,7 +10,7 @@ The org todo entries are saved with the following format:
    <hyper link to assignment>
 #+end_src
 
-* TODO [#B] Some things I might add [0/2]
+* TODO [#C] Some things I might add [0/2]
 - [ ] Add an interactive CLI [0/5]
   + [ ] Ask the user where it would like to create the agenda file
   + [ ] Setup the intermediate json & org file to keep track of todos

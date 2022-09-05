@@ -121,8 +121,10 @@ class CanvasConnection:
 
                 # SCHEDULED: <2022-09-05 Mon 18:00> DEADLINE: <2022-09-09 Fri>
                 time_due = ""
-                if unlock_date:
-                    time_due += f"SCHEDULED: <{unlock_date}> "
+
+                # NOTE: SCHEDULED flags clutters org-agenda
+                # if unlock_date:
+                #     time_due += f"SCHEDULED: <{unlock_date}> "
 
                 time_due += f"DEADLINE: <{due_date}>"
                 f.write(f"{time_due}\n")
