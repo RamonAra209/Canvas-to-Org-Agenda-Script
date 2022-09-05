@@ -9,6 +9,7 @@ build
 htmlcov
 
 venv
+log.txt
 
 *.env
 *.json

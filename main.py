@@ -1,5 +1,6 @@
 import json
 import datetime
+import time
 
 from canvasapi.todo import Todo
 import config
@@ -59,7 +60,7 @@ class CanvasConnection:
             if course_name in data.keys():
                 continue
             courses[course_name] = {}
-            print("Built dict for ", course_name)
+            print("\tBuilt dict for ", course_name)
 
 
         data.update(courses)
@@ -89,7 +90,7 @@ class CanvasConnection:
                         continue
 
 
-                print(f"Building assignment '{name}' for course '{course_name}'")
+                print(f"\tBuilding assignment '{name}' for course '{course_name}'")
                 unlock_date = assignment_data["assignment"].get('unlock_at', None)
                 due_date = assignment_data["assignment"].get('due_at', None)
                 link = assignment_data["assignment"].get('html_url', None)
@@ -115,7 +116,7 @@ class CanvasConnection:
                 due_date = self.added_lines[assignment]["due_date"]
                 link = self.added_lines[assignment]["link"]
 
-                print("Writing org entry for ", assignment)
+                print("\tWriting org entry for ", assignment)
                 f.write(f"* TODO {assignment}\n")
 
                 # SCHEDULED: <2022-09-05 Mon 18:00> DEADLINE: <2022-09-09 Fri>
@@ -131,7 +132,6 @@ class CanvasConnection:
 
     def run(self):
         self.build_json()
-        print()
         self.write_to_org()
 
 def convert_time(time_) -> str:
@@ -150,5 +150,11 @@ def convert_time(time_) -> str:
 
 
 if __name__ == "__main__":
-    driver = CanvasConnection(url=API_URL, token=API_KEY)
-    driver.run()
+    print(datetime.datetime.now())
+    start = time.time()
+    try:
+        driver = CanvasConnection(url=API_URL, token=API_KEY)
+        driver.run()
+    except Exception as e:
+        print("\t", e)
+    print(f"\t Took: {round(time.time() - start, 2)} seconds ", )
