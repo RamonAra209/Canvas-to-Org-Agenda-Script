@@ -10,7 +10,6 @@ htmlcov
 
 venv
 
-config.py
 *.env
 *.json
 *.org
